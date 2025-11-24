@@ -1,0 +1,37 @@
+<div class="about-container" [class.loading]="isLoading">
+    <div class="about-hero" *ngIf="!isLoading">
+        <h1 class="about-title">ShieldNet</h1>
+        <p class="about-subtitle">Công cụ kiểm tra an toàn trực tuyến</p>
+    </div>
+
+    <div class="about-content" *ngIf="!isLoading">
+        <section class="about-section">
+            <div class="icon-wrapper">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h3>Phát hiện mối đe dọa</h3>
+            <p>Quét URL, văn bản và file để xác định nội dung nguy hiểm</p>
+        </section>
+
+        <section class="about-section">
+            <div class="icon-wrapper">
+                <i class="fas fa-bolt"></i>
+            </div>
+            <h3>Kết quả tức thì</h3>
+            <p>Phân tích nhanh chóng với công nghệ AI hiện đại</p>
+        </section>
+
+        <section class="about-section">
+            <div class="icon-wrapper">
+                <i class="fas fa-lock"></i>
+            </div>
+            <h3>Bảo mật tối đa</h3>
+            <p>Dữ liệu được mã hóa và không lưu trữ</p>
+        </section>
+    </div>
+
+    <div class="cta-section" *ngIf="!isLoading">
+        <h2>Bắt đầu kiểm tra ngay</h2>
+        <a routerLink="/" class="cta-button">Thử ngay</a>
+    </div>
+</div>
