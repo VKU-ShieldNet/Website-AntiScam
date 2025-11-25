@@ -13,11 +13,11 @@
                 <span class="pulse-dot"></span> Bảo mật được cấp năng lượng bởi AI
             </div>
             <h1 class="hero-title">
-                Luôn An Toàn Trực Tuyến<br>
-                <span class="text-gradient-primary">Phát Hiện Mối Đe Dọa Tức Thì</span>
+                Luôn An Toàn Trực Tuyến<br> Phát Hiện Mối Đe Dọa Tức Thì
             </h1>
             <p class="hero-subtitle">
-                Bảo vệ AI nâng cao từ lừa đảo, câu cá và nội dung độc hại. Nhận báo cáo bảo mật tức thì trong vòng một giây.
+                Bảo vệ AI nâng cao từ lừa đảo, câu cá và nội dung độc hại. Nhận báo cáo bảo mật tức thì trong vòng một
+                giây.
             </p>
 
             <!-- Quick Action Tabs -->
@@ -25,10 +25,10 @@
                 <button class="tab-btn" [class.active]="activeTab === 'url'" (click)="activeTab = 'url'">
                     <i class="fas fa-link"></i> Kiểm Tra URL
                 </button>
-                <button class="tab-btn" [class.active]="activeTab === 'message'" (click)="activeTab = 'message'">
+                <button class="tab-btn" [class.active]="activeTab === 'text'" (click)="activeTab = 'text'">
                     <i class="fas fa-comment-dots"></i> Kiểm tra văn bản
                 </button>
-                <button class="tab-btn" [class.active]="activeTab === 'file'" (click)="activeTab = 'file'">
+                <button class="tab-btn" [class.active]="activeTab === 'image'" (click)="activeTab = 'image'">
                     <i class="fas fa-file-upload"></i> Quét Tệp
                 </button>
             </div>
@@ -60,7 +60,7 @@
             </div>
 
             <!-- Message Check Card -->
-            <div class="action-card" *ngIf="activeTab === 'message'">
+            <div class="action-card" *ngIf="activeTab === 'text'">
                 <div class="action-header">
                     <i class="fas fa-comment-dots action-icon"></i>
                     <div>
@@ -69,7 +69,7 @@
                     </div>
                 </div>
                 <div class="action-textarea-group">
-                    <textarea class="action-textarea" placeholder="Dán tin nhắn đáng ngờ tại đây..." 
+                    <textarea class="action-textarea" placeholder="Dán tin nhắn đáng ngờ tại đây..."
                         [(ngModel)]="messageInput" rows="4"></textarea>
                     <button class="btn btn-primary action-btn-full" (click)="analyzeMessage()">
                         <i class="fas fa-shield-alt"></i>
@@ -79,7 +79,7 @@
             </div>
 
             <!-- File Scan Card -->
-            <div class="action-card" *ngIf="activeTab === 'file'">
+            <div class="action-card" *ngIf="activeTab === 'image'">
                 <div class="action-header">
                     <i class="fas fa-file-upload action-icon"></i>
                     <div>
@@ -93,7 +93,8 @@
                             (change)="handleFileUpload($event)">
                         <label for="fileInput" class="file-upload-label">
                             <i class="fas fa-cloud-upload-alt upload-icon"></i>
-                            <span class="upload-text">{{ selectedFile ? selectedFile.name : 'Nhấp hoặc kéo tệp vào đây' }}</span>
+                            <span class="upload-text">{{ selectedFile ? selectedFile.name : 'Nhấp hoặc kéo tệp vào đây'
+                                }}</span>
                             <span class="upload-hint">Hỗ trợ: Hình ảnh, PDF, TXT, HTML</span>
                         </label>
                     </div>
@@ -135,7 +136,9 @@
                         Phát Hiện Mối Đe Dọa <span class="text-gradient-primary">Thời Gian Thực</span>
                     </h2>
                     <p class="info-description">
-                        ShieldNet sử dụng công nghệ AI tiên tiến để phân tích tức thì các mẫu, xác minh tính xác thực và kiểm tra chéo với các cơ sở dữ liệu mối đe dọa toàn cầu. Nhận kết quả chính xác trong vòng một giây.
+                        ShieldNet sử dụng công nghệ AI tiên tiến để phân tích tức thì các mẫu, xác minh tính xác thực và
+                        kiểm tra chéo với các cơ sở dữ liệu mối đe dọa toàn cầu. Nhận kết quả chính xác trong vòng một
+                        giây.
                     </p>
                     <div class="stats-row">
                         <div class="stat-item">
@@ -164,104 +167,33 @@
                 <div class="bottom-card card">
                     <i class="fas fa-search bottom-card-icon"></i>
                     <h3 class="bottom-card-title">Phân Tích Sâu</h3>
-                    <p class="bottom-card-description">Chúng tôi phân tích cấu trúc và hành vi nội dung, không chỉ danh sách đen. Phát hiện mối đe dọa chính xác hơn.</p>
+                    <p class="bottom-card-description">Chúng tôi phân tích cấu trúc và hành vi nội dung, không chỉ danh
+                        sách đen. Phát hiện mối đe dọa chính xác hơn.</p>
                 </div>
                 <div class="bottom-card card">
                     <i class="fas fa-bolt bottom-card-icon"></i>
                     <h3 class="bottom-card-title">Kết Quả Tức Thì</h3>
-                    <p class="bottom-card-description">Báo cáo bảo mật hoàn chỉnh trong chưa đến một giây. Không chờ đợi, không phiền phức.</p>
+                    <p class="bottom-card-description">Báo cáo bảo mật hoàn chỉnh trong chưa đến một giây. Không chờ
+                        đợi, không phiền phức.</p>
                 </div>
                 <div class="bottom-card card">
                     <i class="fas fa-shield-alt bottom-card-icon"></i>
                     <h3 class="bottom-card-title">Quyền Riêng Tư Trước Tiên</h3>
-                    <p class="bottom-card-description">Dữ liệu của bạn được xử lý an toàn và không bao giờ được chia sẻ với bất kỳ ai. Quyền riêng tư của bạn quan trọng.</p>
+                    <p class="bottom-card-description">Dữ liệu của bạn được xử lý an toàn và không bao giờ được chia sẻ
+                        với bất kỳ ai. Quyền riêng tư của bạn quan trọng.</p>
                 </div>
             </div>
         </div>
     </section>
 </div>
 
-<!-- Modern Loading Overlay -->
-<div class="loading-overlay" *ngIf="isLoading">
-    <div class="loading-content">
-        <div class="scanner-animation">
-            <div class="scanner-line"></div>
-        </div>
-        <div class="spinner-container">
-            <div class="spinner"></div>
-            <div class="spinner-core"></div>
-        </div>
-        <div class="loading-text-container">
-            <h3 class="loading-title">Đang Phân Tích Nội Dung</h3>
-            <p class="loading-stage">{{ loadingStage || 'Khởi tạo quét...' }}</p>
-        </div>
-        <div class="loading-progress">
-            <div class="progress-bar"></div>
-        </div>
+<!-- Compact Loading Modal -->
+<div class="loading-modal-backdrop-compact" *ngIf="isLoading">
+    <div class="loading-modal-compact">
+        <div class="spinner-compact"></div>
+        <h3 class="loading-title-compact">Đang phân tích...</h3>
+        <p class="loading-stage-compact">{{ loadingStage }}</p>
     </div>
 </div>
 
-<!-- Modern Results Modal -->
-<div class="modal-backdrop" *ngIf="showModal" (click)="closeModal()">
-    <div class="modal-container" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-            <div class="modal-title-wrapper">
-                <h2 class="modal-title">Báo Cáo Phân Tích</h2>
-                <p class="modal-subtitle" *ngIf="urlInput">{{ urlInput }}</p>
-            </div>
-            <button class="close-btn" (click)="closeModal()">×</button>
-        </div>
-
-        <div class="modal-body">
-            <div class="result-status-card" [ngClass]="analysisResult?.status || 'unknown'">
-                <div class="status-icon-wrapper">
-                    <span class="status-icon-large">{{ getStatusIcon() }}</span>
-                </div>
-                <div class="status-info">
-                    <h3 class="status-heading">{{ getStatusLabel() }}</h3>
-                    <p class="status-desc">{{ analysisResult?.details }}</p>
-                </div>
-                <div class="score-circle">
-                    <svg viewBox="0 0 36 36" class="circular-chart">
-                        <path class="circle-bg"
-                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                        <path class="circle" [attr.stroke-dasharray]="(analysisResult?.score || 0) + ', 100'"
-                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                    </svg>
-                    <div class="score-text">
-                        <span class="score-value">{{ analysisResult?.score }}</span>
-                        <span class="score-label">Điểm</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="result-details-grid" *ngIf="analysisResult">
-                <div class="detail-section" *ngIf="analysisResult.threats && analysisResult.threats.length > 0">
-                    <h4 class="detail-title text-danger"><i class="fas fa-exclamation-triangle"></i> Mối Đe Dọa Được Phát Hiện</h4>
-                    <ul class="detail-list threat-list">
-                        <li *ngFor="let threat of analysisResult.threats">{{ threat }}</li>
-                    </ul>
-                </div>
-
-                <div class="detail-section"
-                    *ngIf="analysisResult.recommendations && analysisResult.recommendations.length > 0">
-                    <h4 class="detail-title text-success"><i class="fas fa-shield-alt"></i> Khuyến Nghị</h4>
-                    <ul class="detail-list recommendation-list">
-                        <li *ngFor="let rec of analysisResult.recommendations">{{ rec }}</li>
-                    </ul>
-                </div>
-
-                <div class="detail-meta">
-                    <span class="meta-item"><strong>ID Quét:</strong> #{{ analysisResult.timestamp | date:'mmss'
-                        }}</span>
-                    <span class="meta-item"><strong>Thời Gian:</strong> {{ analysisResult.timestamp | date:'medium' }}</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal-footer">
-            <button class="btn btn-secondary" (click)="closeModal()">Đóng Báo Cáo</button>
-            <button class="btn btn-primary">Tải Xuống PDF</button>
-        </div>
-    </div>
-</div>
+<!-- ng-bootstrap modal is opened programmatically in TypeScript -->

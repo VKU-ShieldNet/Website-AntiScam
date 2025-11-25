@@ -1,54 +1,90 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
-
-export interface AnalysisRequest {
-  url?: string;
-  message?: string;
-  deepScan?: boolean;
-}
-
-export interface AnalysisResponse {
-  status: 'safe' | 'warning' | 'danger';
-  score: number;
-  details: string;
-  threats?: string[];
-  recommendations?: string[];
-  timestamp: string;
-}
+import { map } from 'rxjs/operators';
+import {
+  UrlAnalysisResponse,
+  TextAnalysisResponse,
+  AnalysisResult
+} from '../models/analysis.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AnalysisService {
-  private apiUrl = environment.apiUrl || 'http://localhost:8000/api';
+  private readonly API_BASE_URL = 'http://localhost:8000';
 
   constructor(private http: HttpClient) { }
 
   /**
-   * Analyze a URL for potential threats
+   * Analyze URL for security threats
    */
-  analyzeUrl(url: string, deepScan: boolean = false): Observable<AnalysisResponse> {
-    const payload: AnalysisRequest = { url, deepScan };
-    return this.http.post<AnalysisResponse>(`${this.apiUrl}/analyze/url`, payload);
+  analyzeUrl(url: string, forceRefresh: boolean = false): Observable<AnalysisResult> {
+    const payload = { url, force_refresh: forceRefresh };
+    return this.http
+      .post<UrlAnalysisResponse>(`${this.API_BASE_URL}/model/analyze`, payload)
+      .pipe(map(response => this.mapUrlResponse(response)));
   }
 
   /**
-   * Analyze a text message for scam content
+   * Analyze text content for scam/phishing
    */
-  analyzeMessage(message: string): Observable<AnalysisResponse> {
-    const payload: AnalysisRequest = { message };
-    return this.http.post<AnalysisResponse>(`${this.apiUrl}/analyze/message`, payload);
+  analyzeText(text: string): Observable<AnalysisResult> {
+    const payload = { text };
+    return this.http
+      .post<TextAnalysisResponse>(`${this.API_BASE_URL}/text/analyze`, payload)
+      .pipe(map(response => this.mapTextResponse(response)));
   }
 
   /**
-   * Analyze a file (image, PDF, etc.) for malicious content
+   * Map URL API response to common AnalysisResult format
    */
-  analyzeFile(file: File): Observable<AnalysisResponse> {
-    const formData = new FormData();
-    formData.append('file', file);
+  private mapUrlResponse(response: UrlAnalysisResponse): AnalysisResult {
+    // Map risk_level to status
+    const statusMap: Record<string, 'safe' | 'warning' | 'danger'> = {
+      safe: 'safe',
+      suspicious: 'warning',
+      dangerous: 'danger'
+    };
 
-    return this.http.post<AnalysisResponse>(`${this.apiUrl}/analyze/file`, formData);
+    return {
+      status: statusMap[response.risk_level] || 'warning',
+      score: response.score, // Use API score directly
+      details: response.conclusion,
+      is_safe: response.is_safe,
+      threats: response.is_safe ? [] : (response.explanation ? [response.explanation] : []),
+      recommendations: response.is_safe ? ['Website này được xác nhận là an toàn'] : [response.advice],
+      timestamp: new Date().toISOString()
+    };
   }
+
+  /**
+   * Map Text API response to common AnalysisResult format
+   */
+  private mapTextResponse(response: TextAnalysisResponse): AnalysisResult {
+    const label = response.label.toLowerCase();
+
+    // Determine status and is_safe from label
+    let status: 'safe' | 'warning' | 'danger' = 'warning';
+    let is_safe = false;
+
+    if (label.includes('safe') || label.includes('legitimate')) {
+      status = 'safe';
+      is_safe = true;
+    } else if (label.includes('scam') || label.includes('phishing') || label.includes('fraud')) {
+      status = 'danger';
+      is_safe = false;
+    }
+
+    return {
+      status,
+      score: response.score, // Use API score if provided, undefined otherwise
+      details: response.label,
+      is_safe,
+      threats: is_safe ? [] : response.evidence,
+      recommendations: response.recommendation,
+      timestamp: new Date().toISOString()
+    };
+  }
+
 }
