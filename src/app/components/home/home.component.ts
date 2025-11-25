@@ -1,5 +1,12 @@
 import { Component } from '@angular/core';
-import { AnalysisService, AnalysisResponse } from '../../services/analysis.service';
+import { AnalysisService } from '../../services/analysis.service';
+import { ToastService } from '../../services/toast.service';
+import { AnalysisResult, LoadingState, AnalysisType } from '../../models/analysis.model';
+import { OCRUtil } from '../../utils/ocr.util';
+import { LOADING_MESSAGES, LOADING_CYCLE_DURATION } from '../../constants/loading-stages.constant';
+import { VALIDATION_MESSAGES, SUCCESS_MESSAGES, ERROR_MESSAGES } from '../../constants/toast-messages.constant';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { AnalysisModalComponent } from './analysis-modal/analysis-modal.component';
 
 @Component({
   selector: 'app-home',
@@ -7,94 +14,108 @@ import { AnalysisService, AnalysisResponse } from '../../services/analysis.servi
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent {
-  urlInput: string = '';
-  messageInput: string = '';
+  // Form inputs
+  urlInput = '';
+  messageInput = '';
   selectedFile: File | null = null;
-  deepScanEnabled: boolean = false;
-  isLoading: boolean = false;
-  loadingStage: string = '';
-  showModal: boolean = false;
-  analysisResult: AnalysisResponse | null = null;
-  activeTab: 'url' | 'message' | 'file' = 'url';
+  deepScanEnabled = false;
 
-  constructor(private analysisService: AnalysisService) { }
+  // UI state
+  activeTab: AnalysisType = 'url';
+  loadingState: LoadingState = {
+    isLoading: false,
+    stage: '',
+    progress: 0
+  };
 
-  /**
-   * Simulate a multi-step analysis process
-   */
-  private async simulateAnalysisProcess(callback: () => void): Promise<void> {
-    this.isLoading = true;
+  // Analysis result
+  analysisResult: AnalysisResult | null = null;
+  private loadingInterval: any = null;
 
-    const stages = [
-      'Establishing secure connection...',
-      'Scanning database for known threats...',
-      'Analyzing content heuristics...',
-      'Running deep learning models...',
-      'Verifying SSL/TLS certificates...',
-      'Finalizing security report...'
-    ];
+  constructor(
+    private analysisService: AnalysisService,
+    private toastService: ToastService,
+    private modalService: NgbModal
+  ) { }
 
-    for (const stage of stages) {
-      this.loadingStage = stage;
-      // Random delay between 800ms and 1500ms for realism
-      await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 700));
-    }
+  async analyzeUrl(): Promise<void> {
+    if (!this.validateUrlInput()) return;
 
-    callback();
+    await this.executeAnalysis(
+      () => this.analysisService.analyzeUrl(this.urlInput, this.deepScanEnabled)
+    );
   }
 
-  /**
-   * Start URL analysis
-   */
-  startAnalysis(): void {
+  private validateUrlInput(): boolean {
     if (!this.urlInput.trim()) {
-      alert('Please enter a URL to analyze');
-      return;
+      this.showToast(VALIDATION_MESSAGES.URL_EMPTY, 'warning');
+      return false;
     }
-
-    this.simulateAnalysisProcess(() => {
-      this.analysisService.analyzeUrl(this.urlInput, this.deepScanEnabled).subscribe({
-        next: (result) => {
-          this.analysisResult = result;
-          this.showModal = true;
-          this.isLoading = false;
-        },
-        error: (error) => {
-          console.error('Analysis error:', error);
-          // Mock success for demo purposes if API fails or is not connected
-          this.mockSuccessResult('url');
-        }
-      });
-    });
+    return true;
   }
 
-  /**
-   * Analyze message content
-   */
-  analyzeMessage(): void {
+  async analyzeText(): Promise<void> {
+    if (!this.validateTextInput()) return;
+
+    await this.executeAnalysis(
+      () => this.analysisService.analyzeText(this.messageInput)
+    );
+  }
+
+  private validateTextInput(): boolean {
     if (!this.messageInput.trim()) {
-      alert('Please enter a message to analyze');
+      this.showToast(VALIDATION_MESSAGES.TEXT_EMPTY, 'warning');
+      return false;
+    }
+    return true;
+  }
+
+  async analyzeFile(): Promise<void> {
+    if (!this.validateFileInput()) return;
+
+    if (!OCRUtil.isImageFile(this.selectedFile!)) {
+      this.showToast(VALIDATION_MESSAGES.IMAGE_ONLY, 'warning');
       return;
     }
 
-    this.simulateAnalysisProcess(() => {
-      this.analysisService.analyzeMessage(this.messageInput).subscribe({
-        next: (result) => {
-          this.analysisResult = result;
-          this.showModal = true;
-          this.isLoading = false;
-        },
-        error: (error) => {
-          console.error('Analysis error:', error);
-          this.mockSuccessResult('message');
-        }
-      });
-    });
+    await this.analyzeImageWithOCR();
   }
 
-  /**
-   * Handle file upload
-   */
+  private validateFileInput(): boolean {
+    if (!this.selectedFile) {
+      this.showToast(VALIDATION_MESSAGES.FILE_EMPTY, 'warning');
+      return false;
+    }
+    return true;
+  }
+
+  private async analyzeImageWithOCR(): Promise<void> {
+    try {
+      this.loadingState = { isLoading: true, stage: '🔍 Đang nhận dạng văn bản...', progress: 0 };
+
+      // Perform OCR
+      const extractedText = await OCRUtil.extractText(
+        this.selectedFile!,
+        (progress) => {
+          this.loadingState.progress = progress;
+          this.loadingState.stage = `🔍 Đang nhận dạng văn bản... ${progress}%`;
+        }
+      );
+
+      if (!extractedText) {
+        throw new Error(VALIDATION_MESSAGES.OCR_EXTRACT_FAILED);
+      }
+
+      // Analyze extracted text with loading
+      await this.executeAnalysis(
+        () => this.analysisService.analyzeText(extractedText)
+      );
+
+    } catch (error) {
+      this.handleError(error, 'OCR');
+    }
+  }
+
   handleFileUpload(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
@@ -102,87 +123,150 @@ export class HomeComponent {
     }
   }
 
-  /**
-   * Analyze uploaded file
-   */
-  analyzeFile(): void {
-    if (!this.selectedFile) {
-      alert('Please select a file to analyze');
-      return;
+  private async executeAnalysis(apiCall: () => any): Promise<void> {
+    try {
+      // Start loading and cycle through messages
+      this.startLoadingCycle();
+
+      // Call API and wait for response
+      const result = await apiCall().toPromise();
+
+      // Stop loading and show result
+      this.stopLoadingCycle();
+      this.handleSuccess(result);
+
+    } catch (error) {
+      this.stopLoadingCycle();
+      this.handleError(error, 'analysis');
+    }
+  }
+
+  private startLoadingCycle(): void {
+    this.loadingState.isLoading = true;
+
+    // Set initial random message
+    this.loadingState.stage = this.getRandomLoadingMessage();
+
+    // Cycle through random messages
+    this.loadingInterval = setInterval(() => {
+      this.loadingState.stage = this.getRandomLoadingMessage();
+    }, LOADING_CYCLE_DURATION);
+  }
+
+  private getRandomLoadingMessage(): string {
+    const randomIndex = Math.floor(Math.random() * LOADING_MESSAGES.length);
+    return LOADING_MESSAGES[randomIndex];
+  }
+
+  private stopLoadingCycle(): void {
+    if (this.loadingInterval) {
+      clearInterval(this.loadingInterval);
+      this.loadingInterval = null;
+    }
+    this.loadingState.isLoading = false;
+  }
+
+  cancelAnalysis(): void {
+    this.stopLoadingCycle();
+    this.showToast('Đã hủy phân tích', 'info');
+  }
+
+  private delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  private handleSuccess(result: AnalysisResult): void {
+    this.analysisResult = result;
+    console.log('Analysis Result:', this.analysisResult);
+    this.loadingState.isLoading = false;
+
+    const statusMessage = this.getSuccessMessage(result.status);
+    this.showToast(statusMessage, result.status === 'safe' ? 'success' : 'info');
+
+    // Open ng-bootstrap modal
+    this.openResultModal();
+  }
+
+  private openResultModal(): void {
+    const modalRef = this.modalService.open(AnalysisModalComponent, {
+      centered: true,
+      size: 'lg',
+      backdrop: 'static',
+      scrollable: true,
+      windowClass: 'analysis-modal-window'
+    });
+    modalRef.componentInstance.analysisResult = this.analysisResult;
+    modalRef.componentInstance.urlInput = this.urlInput;
+  }
+
+  private getSuccessMessage(status: string): string {
+    const messages: Record<string, string> = {
+      safe: SUCCESS_MESSAGES.SAFE,
+      warning: SUCCESS_MESSAGES.WARNING,
+      danger: SUCCESS_MESSAGES.DANGER
+    };
+    return messages[status] || 'Phân tích hoàn tất';
+  }
+
+  private handleError(error: any, context: string): void {
+    console.error(`${context} Error:`, error);
+    this.loadingState.isLoading = false;
+
+    const errorMessage = this.getErrorMessage(error, context);
+    this.showToast(errorMessage, 'error');
+  }
+
+  private getErrorMessage(error: any, context: string): string {
+    if (context === 'OCR') {
+      return ERROR_MESSAGES.OCR_ERROR;
     }
 
-    this.simulateAnalysisProcess(() => {
-      this.analysisService.analyzeFile(this.selectedFile!).subscribe({
-        next: (result) => {
-          this.analysisResult = result;
-          this.showModal = true;
-          this.isLoading = false;
-        },
-        error: (error) => {
-          console.error('Analysis error:', error);
-          this.mockSuccessResult('file');
-        }
-      });
-    });
+    if (error?.message) {
+      return error.message;
+    }
+
+    if (error?.status === 0) {
+      return ERROR_MESSAGES.CONNECTION_FAILED;
+    }
+
+    if (error?.status === 500) {
+      return ERROR_MESSAGES.SERVER_ERROR;
+    }
+
+    return ERROR_MESSAGES.GENERIC_ERROR;
   }
 
-  /**
-   * Mock result for demonstration when API is not available
-   */
-  private mockSuccessResult(type: 'url' | 'message' | 'file'): void {
-    this.analysisResult = {
-      status: 'safe',
-      score: 95,
-      details: 'No significant threats detected.',
-      threats: [],
-      recommendations: ['Always verify the sender identity', 'Keep your software updated'],
-      timestamp: new Date().toISOString()
-    };
-    this.showModal = true;
-    this.isLoading = false;
-  }
-
-  /**
-   * Close results modal
-   */
-  closeModal(): void {
-    this.showModal = false;
-    this.analysisResult = null;
-  }
-
-  /**
-   * Get status icon based on analysis result
-   */
   getStatusIcon(): string {
     if (!this.analysisResult) return '🔍';
-
-    switch (this.analysisResult.status) {
-      case 'safe':
-        return '✅';
-      case 'warning':
-        return '⚠️';
-      case 'danger':
-        return '🚨';
-      default:
-        return '🔍';
-    }
+    const icons = { safe: '✅', warning: '⚠️', danger: '🚨' };
+    return icons[this.analysisResult.status] || '🔍';
   }
 
-  /**
-   * Get status label
-   */
   getStatusLabel(): string {
-    if (!this.analysisResult) return 'Analyzing...';
+    if (!this.analysisResult) return 'Đang phân tích...';
+    const labels = { safe: 'An toàn', warning: 'Cảnh báo', danger: 'Nguy hiểm' };
+    return labels[this.analysisResult.status] || 'Không rõ';
+  }
 
-    switch (this.analysisResult.status) {
-      case 'safe':
-        return 'Safe';
-      case 'warning':
-        return 'Warning';
-      case 'danger':
-        return 'Dangerous';
-      default:
-        return 'Unknown';
-    }
+
+  private showToast(message: string, type: 'success' | 'error' | 'warning' | 'info'): void {
+    this.toastService.show(message, type);
+  }
+
+
+  get isLoading(): boolean {
+    return this.loadingState.isLoading;
+  }
+
+  get loadingStage(): string {
+    return this.loadingState.stage;
+  }
+
+  startAnalysis(): void {
+    this.analyzeUrl();
+  }
+
+  analyzeMessage(): void {
+    this.analyzeText();
   }
 }

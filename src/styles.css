@@ -1,5 +1,5 @@
 /* ===== GLOBAL STYLES & MODERN COLOR SCHEME ===== */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&family=Open+Sans:wght@400;500;600;700&display=swap');
 @import url('../node_modules/@fortawesome/fontawesome-free/css/all.min.css');
 
 :root {
@@ -46,8 +46,8 @@
   --color-info-border: hsla(215, 85%, 55%, 0.25);
 
   /* ===== SOFT GRADIENTS ===== */
-  --gradient-primary: linear-gradient(135deg, 
-                       hsla(250, 60%, 58%, 0.05) 0%, 
+  --gradient-primary: linear-gradient(135deg,
+                       hsla(250, 60%, 58%, 0.05) 0%,
                        hsla(195, 75%, 48%, 0.05) 100%);
 
   --gradient-mesh: radial-gradient(at 40% 20%, hsla(250, 60%, 58%, 0.08) 0px, transparent 50%),
@@ -114,19 +114,20 @@
 html,
 body {
   height: 100%;
-  font-family: "Inter", sans-serif;
+  font-family: "Roboto", sans-serif;
+  font-size: 18px; /* Larger base font for elderly users */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--color-bg-primary);
   color: var(--color-text-primary);
-  line-height: 1.6;
+  line-height: 1.8; /* Increased line height for better readability */
   overflow-x: hidden;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
   color: var(--color-text-primary);
 }
 
@@ -320,5 +321,30 @@ textarea.form-control {
 
 .w-full {
   width: 100%;
+}
+
+.analysis-modal-window .modal-content {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.analysis-modal-window .modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(3px);
+}
+
+.modal-header {
+  border-bottom: 1px solid #e5e5e5;
+  padding: 1.25rem 1.5rem;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-footer {
+  border-top: 1px solid #e5e5e5;
+  padding: 1rem 1.5rem;
 }
 

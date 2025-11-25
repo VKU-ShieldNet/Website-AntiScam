@@ -1,0 +1,48 @@
+<div class="modal-header">
+    <h4 class="modal-title">
+        <span class="status-icon-large">{{ getStatusIcon() }}</span>
+        {{ getStatusLabel() }}
+    </h4>
+    <button type="button" class="close btn-close" aria-label="Close"
+        (click)="activeModal.dismiss('Cross click')"></button>
+</div>
+<div class="modal-body">
+    <p class="status-desc">{{ analysisResult.details }}</p>
+
+    <!-- Score circle - only show if API provides score -->
+    <div class="score-circle" *ngIf="analysisResult.score !== undefined && analysisResult.score !== null">
+        <svg viewBox="0 0 36 36" class="circular-chart">
+            <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            <path class="circle" [attr.stroke-dasharray]="analysisResult.score + ', 100'"
+                [ngClass]="{'safe': analysisResult.status === 'safe', 'warning': analysisResult.status === 'warning', 'danger': analysisResult.status === 'danger'}"
+                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+        </svg>
+        <div class="score-text">
+            <span class="score-value">{{ analysisResult.score }}</span>
+            <span class="score-label">Điểm</span>
+        </div>
+    </div>
+    <div class="result-details-grid" *ngIf="analysisResult">
+        <div class="detail-section" *ngIf="analysisResult.threats?.length">
+            <h5 class="detail-title text-danger"><i class="fas fa-exclamation-triangle"></i> Mối Đe Dọa Được Phát Hiện
+            </h5>
+            <ul class="detail-list threat-list">
+                <li *ngFor="let threat of analysisResult.threats">{{ threat }}</li>
+            </ul>
+        </div>
+        <div class="detail-section" *ngIf="analysisResult.recommendations?.length">
+            <h5 class="detail-title text-success"><i class="fas fa-shield-alt"></i> Khuyến Nghị</h5>
+            <ul class="detail-list recommendation-list">
+                <li *ngFor="let rec of analysisResult.recommendations">{{ rec }}</li>
+            </ul>
+        </div>
+        <div class="detail-meta">
+            <span class="meta-item"><strong>ID Quét:</strong> #{{ analysisResult.timestamp | date:'mmss' }}</span>
+            <span class="meta-item"><strong>Thời Gian:</strong> {{ analysisResult.timestamp | date:'medium' }}</span>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="activeModal.close('Close click')">Đóng</button>
+    <button type="button" class="btn btn-primary">Tải Xuống PDF</button>
+</div>
