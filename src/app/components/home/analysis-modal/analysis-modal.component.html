@@ -1,13 +1,13 @@
 <div class="modal-header">
     <h4 class="modal-title">
-        <span class="status-icon-large">{{ getStatusIcon() }}</span>
+        <i [class]="getStatusIcon() + ' status-icon-large'"></i>
         {{ getStatusLabel() }}
     </h4>
     <button type="button" class="close btn-close" aria-label="Close"
         (click)="activeModal.dismiss('Cross click')"></button>
 </div>
 <div class="modal-body">
-    <p class="status-desc">{{ analysisResult.details }}</p>
+    <p class="status-desc" [ngClass]="analysisResult.status">{{ analysisResult.details }}</p>
 
     <!-- Score circle - only show if API provides score -->
     <div class="score-circle" *ngIf="analysisResult.score !== undefined && analysisResult.score !== null">
@@ -110,13 +110,13 @@
             <h5 class="detail-title text-danger"><i class="fas fa-exclamation-triangle"></i> Threats Detected
             </h5>
             <ul class="detail-list threat-list">
-                <li *ngFor="let threat of analysisResult.threats">{{ threat }}</li>
+                <li *ngFor="let threat of analysisResult.threats" [innerHTML]="convertMarkdownToHtml(threat)"></li>
             </ul>
         </div>
         <div class="detail-section" *ngIf="analysisResult.recommendations?.length">
             <h5 class="detail-title text-success"><i class="fas fa-shield-alt"></i> Recommendations</h5>
             <ul class="detail-list recommendation-list">
-                <li *ngFor="let rec of analysisResult.recommendations">{{ rec }}</li>
+                <li *ngFor="let rec of analysisResult.recommendations" [innerHTML]="convertMarkdownToHtml(rec)"></li>
             </ul>
         </div>
         <div class="detail-meta">
