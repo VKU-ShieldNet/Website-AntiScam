@@ -254,9 +254,13 @@ export class HomeComponent {
   }
 
   getStatusIcon(): string {
-    if (!this.analysisResult) return '🔍';
-    const icons = { safe: '✅', warning: '⚠️', danger: '🚨' };
-    return icons[this.analysisResult.status] || '🔍';
+    if (!this.analysisResult) return 'fas fa-search';
+    const icons: Record<string, string> = {
+      safe: 'fas fa-check-circle',
+      warning: 'fas fa-exclamation-triangle',
+      danger: 'fas fa-times-circle'
+    };
+    return icons[this.analysisResult.status] || 'fas fa-search';
   }
 
   getStatusLabel(): string {
