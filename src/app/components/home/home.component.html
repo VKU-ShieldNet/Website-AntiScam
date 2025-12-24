@@ -10,26 +10,26 @@
     <section class="hero">
         <div class="hero-content">
             <div class="hero-badge">
-                <span class="pulse-dot"></span> Bảo mật được cấp năng lượng bởi AI
+                <span class="pulse-dot"></span> AI-Powered Security
             </div>
             <h1 class="hero-title">
-                Luôn An Toàn Trực Tuyến<br> Phát Hiện Mối Đe Dọa Tức Thì
+                Stay Safe Online<br> Detect Threats Instantly
             </h1>
             <p class="hero-subtitle">
-                Bảo vệ AI nâng cao từ lừa đảo, câu cá và nội dung độc hại. Nhận báo cáo bảo mật tức thì trong vòng một
-                giây.
+                Advanced AI protection from scams, phishing, and malicious content. Get instant security reports in one
+                second.
             </p>
 
             <!-- Quick Action Tabs -->
             <div class="quick-action-tabs">
                 <button class="tab-btn" [class.active]="activeTab === 'url'" (click)="activeTab = 'url'">
-                    <i class="fas fa-link"></i> Kiểm Tra URL
+                    <i class="fas fa-link"></i> Check URL
                 </button>
                 <button class="tab-btn" [class.active]="activeTab === 'text'" (click)="activeTab = 'text'">
-                    <i class="fas fa-comment-dots"></i> Kiểm tra văn bản
+                    <i class="fas fa-comment-dots"></i> Check Text
                 </button>
                 <button class="tab-btn" [class.active]="activeTab === 'image'" (click)="activeTab = 'image'">
-                    <i class="fas fa-file-upload"></i> Quét Tệp
+                    <i class="fas fa-file-upload"></i> Scan File
                 </button>
             </div>
 
@@ -38,8 +38,8 @@
                 <div class="action-header">
                     <i class="fas fa-link action-icon"></i>
                     <div>
-                        <h3 class="action-title">Kiểm Tra Bảo Mật URL</h3>
-                        <p class="action-description">Dán bất kỳ liên kết đáng ngờ nào để phân tích các mối đe dọa</p>
+                        <h3 class="action-title">URL Security Check</h3>
+                        <p class="action-description">Paste any suspicious link to analyze for threats</p>
                     </div>
                 </div>
                 <div class="action-input-group">
@@ -47,14 +47,14 @@
                         [(ngModel)]="urlInput" (keyup.enter)="startAnalysis()">
                     <button class="btn btn-primary action-btn" (click)="startAnalysis()">
                         <i class="fas fa-search"></i>
-                        <span>Phân Tích Ngay</span>
+                        <span>Analyze Now</span>
                     </button>
                 </div>
                 <div class="action-options">
                     <label class="deep-scan-toggle">
                         <input type="checkbox" [(ngModel)]="deepScanEnabled">
                         <span class="toggle-slider"></span>
-                        <span class="toggle-label"><i class="fas fa-microscope"></i> Bật Quét Sâu</span>
+                        <span class="toggle-label"><i class="fas fa-microscope"></i> Enable Deep Scan</span>
                     </label>
                 </div>
             </div>
@@ -64,16 +64,16 @@
                 <div class="action-header">
                     <i class="fas fa-comment-dots action-icon"></i>
                     <div>
-                        <h3 class="action-title">Phân tích văn bản</h3>
-                        <p class="action-description">Kiểm tra văn bản văn bản, email hoặc trò chuyện để tìm lừa đảo</p>
+                        <h3 class="action-title">Text Analysis</h3>
+                        <p class="action-description">Check text, email, or chat messages for scams</p>
                     </div>
                 </div>
                 <div class="action-textarea-group">
-                    <textarea class="action-textarea" placeholder="Dán tin nhắn đáng ngờ tại đây..."
+                    <textarea class="action-textarea" placeholder="Paste suspicious message here..."
                         [(ngModel)]="messageInput" rows="4"></textarea>
                     <button class="btn btn-primary action-btn-full" (click)="analyzeMessage()">
                         <i class="fas fa-shield-alt"></i>
-                        <span>Phân tích văn bản</span>
+                        <span>Analyze Text</span>
                     </button>
                 </div>
             </div>
@@ -83,8 +83,8 @@
                 <div class="action-header">
                     <i class="fas fa-file-upload action-icon"></i>
                     <div>
-                        <h3 class="action-title">Máy Quét Tệp</h3>
-                        <p class="action-description">Tải lên hình ảnh, tệp PDF hoặc HTML để phân tích</p>
+                        <h3 class="action-title">File Scanner</h3>
+                        <p class="action-description">Upload image, PDF, or HTML file for analysis</p>
                     </div>
                 </div>
                 <div class="action-file-group">
@@ -93,14 +93,14 @@
                             (change)="handleFileUpload($event)">
                         <label for="fileInput" class="file-upload-label">
                             <i class="fas fa-cloud-upload-alt upload-icon"></i>
-                            <span class="upload-text">{{ selectedFile ? selectedFile.name : 'Nhấp hoặc kéo tệp vào đây'
+                            <span class="upload-text">{{ selectedFile ? selectedFile.name : 'Click or drag file here'
                                 }}</span>
-                            <span class="upload-hint">Hỗ trợ: Hình ảnh, PDF, TXT, HTML</span>
+                            <span class="upload-hint">Supports: Image, PDF, TXT, HTML</span>
                         </label>
                     </div>
                     <button class="btn btn-primary action-btn-full" (click)="analyzeFile()">
                         <i class="fas fa-search"></i>
-                        <span>Quét Tệp</span>
+                        <span>Scan File</span>
                     </button>
                 </div>
             </div>
@@ -112,10 +112,10 @@
                 <div class="shield-glow"></div>
                 <i class="fas fa-shield-alt shield-icon"></i>
                 <div class="floating-card card-1">
-                    <i class="fas fa-check-circle card-icon"></i> An Toàn
+                    <i class="fas fa-check-circle card-icon"></i> Safe
                 </div>
                 <div class="floating-card card-2">
-                    <i class="fas fa-exclamation-triangle card-icon"></i> Đe Dọa
+                    <i class="fas fa-exclamation-triangle card-icon"></i> Threat
                 </div>
             </div>
         </div>
@@ -133,25 +133,24 @@
                 </div>
                 <div class="info-content">
                     <h2 class="info-title">
-                        Phát Hiện Mối Đe Dọa <span class="text-gradient-primary">Thời Gian Thực</span>
+                        <span class="text-gradient-primary">Real-Time</span> Threat Detection
                     </h2>
                     <p class="info-description">
-                        ShieldNet sử dụng công nghệ AI tiên tiến để phân tích tức thì các mẫu, xác minh tính xác thực và
-                        kiểm tra chéo với các cơ sở dữ liệu mối đe dọa toàn cầu. Nhận kết quả chính xác trong vòng một
-                        giây.
+                        ShieldNet uses advanced AI technology to instantly analyze patterns, verify authenticity, and
+                        cross-check with global threat databases. Get accurate results in one second.
                     </p>
                     <div class="stats-row">
                         <div class="stat-item">
                             <span class="stat-number">99.9%</span>
-                            <span class="stat-label">Tỷ Lệ Phát Hiện</span>
+                            <span class="stat-label">Detection Rate</span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-number">&lt; 1s</span>
-                            <span class="stat-label">Tốc Độ Phân Tích</span>
+                            <span class="stat-label">Analysis Speed</span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-number">24/7</span>
-                            <span class="stat-label">Có Sẵn</span>
+                            <span class="stat-label">Available</span>
                         </div>
                     </div>
                 </div>
@@ -162,25 +161,25 @@
     <!-- Bottom Features -->
     <section class="bottom-features">
         <div class="container">
-            <h2 class="section-title text-center mb-5">Tại Sao Tin Tưởng ShieldNet?</h2>
+            <h2 class="section-title text-center mb-5">Why Trust ShieldNet?</h2>
             <div class="bottom-grid">
                 <div class="bottom-card card">
                     <i class="fas fa-search bottom-card-icon"></i>
-                    <h3 class="bottom-card-title">Phân Tích Sâu</h3>
-                    <p class="bottom-card-description">Chúng tôi phân tích cấu trúc và hành vi nội dung, không chỉ danh
-                        sách đen. Phát hiện mối đe dọa chính xác hơn.</p>
+                    <h3 class="bottom-card-title">Deep Analysis</h3>
+                    <p class="bottom-card-description">We analyze content structure and behavior, not just blacklists.
+                        More accurate threat detection.</p>
                 </div>
                 <div class="bottom-card card">
                     <i class="fas fa-bolt bottom-card-icon"></i>
-                    <h3 class="bottom-card-title">Kết Quả Tức Thì</h3>
-                    <p class="bottom-card-description">Báo cáo bảo mật hoàn chỉnh trong chưa đến một giây. Không chờ
-                        đợi, không phiền phức.</p>
+                    <h3 class="bottom-card-title">Instant Results</h3>
+                    <p class="bottom-card-description">Complete security report in under one second. No waiting, no
+                        hassle.</p>
                 </div>
                 <div class="bottom-card card">
                     <i class="fas fa-shield-alt bottom-card-icon"></i>
-                    <h3 class="bottom-card-title">Quyền Riêng Tư Trước Tiên</h3>
-                    <p class="bottom-card-description">Dữ liệu của bạn được xử lý an toàn và không bao giờ được chia sẻ
-                        với bất kỳ ai. Quyền riêng tư của bạn quan trọng.</p>
+                    <h3 class="bottom-card-title">Privacy First</h3>
+                    <p class="bottom-card-description">Your data is processed securely and never shared with anyone.
+                        Your privacy matters.</p>
                 </div>
             </div>
         </div>
@@ -191,7 +190,7 @@
 <div class="loading-modal-backdrop-compact" *ngIf="isLoading">
     <div class="loading-modal-compact">
         <div class="spinner-compact"></div>
-        <h3 class="loading-title-compact">Đang phân tích...</h3>
+        <h3 class="loading-title-compact">Analyzing...</h3>
         <p class="loading-stage-compact">{{ loadingStage }}</p>
     </div>
 </div>

@@ -1,0 +1,162 @@
+<div class="modal-header">
+    <h4 class="modal-title">
+        <i class="fas fa-shield-alt"></i>
+        Website Check: {{ url }}
+    </h4>
+    <button type="button" class="close btn-close" aria-label="Close"
+        (click)="activeModal.dismiss('Cross click')"></button>
+</div>
+
+<div class="modal-body">
+    <div class="check-layout">
+        <!-- LEFT PANEL: AI Analysis (Full Height) -->
+        <div class="left-panel">
+            <div class="panel-card">
+                <div class="card-header">
+                    <i class="fas fa-robot"></i>
+                    <h5>AI Analysis</h5>
+                </div>
+
+                <div class="card-content">
+                    <!-- Loading State -->
+                    <div *ngIf="aiAnalysisLoading" class="loading-skeleton">
+                        <div class="skeleton-circle"></div>
+                        <div class="skeleton-line"></div>
+                        <div class="skeleton-line"></div>
+                    </div>
+
+                    <!-- Error State -->
+                    <div *ngIf="aiAnalysisError && !aiAnalysisLoading" class="error-state">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>{{ aiAnalysisError }}</p>
+                    </div>
+
+                    <!-- Loaded State -->
+                    <div *ngIf="!aiAnalysisLoading && !aiAnalysisError && analysisResult" class="ai-content">
+                        <!-- Risk Score Circle -->
+                        <div class="risk-score-container">
+                            <div class="risk-circle" [ngClass]="{'safe': analysisResult.status === 'safe',
+                                            'warning': analysisResult.status === 'warning',
+                                            'danger': analysisResult.status === 'danger'}">
+                                <i class="fas fa-check" *ngIf="analysisResult.status === 'safe'"></i>
+                                <i class="fas fa-exclamation-triangle" *ngIf="analysisResult.status === 'warning'"></i>
+                                <i class="fas fa-times" *ngIf="analysisResult.status === 'danger'"></i>
+                            </div>
+                            <p class="risk-label">{{ analysisResult.is_safe ? 'Appears Safe' : 'Dangerous' }}</p>
+                        </div>
+
+                        <!-- Risk Score -->
+                        <div class="risk-score-section">
+                            <h6>Risk:</h6>
+                            <div class="score-badge" [ngClass]="{'safe': analysisResult.status === 'safe',
+                                            'warning': analysisResult.status === 'warning',
+                                            'danger': analysisResult.status === 'danger'}">
+                                {{ getRiskScoreDisplay() }}
+                            </div>
+                        </div>
+
+                        <!-- Gemini AI Analysis -->
+                        <div class="ai-analysis-section" *ngIf="getGeminiAnalysis()">
+                            <h6><i class="fas fa-brain"></i> AI Analysis:</h6>
+                            <div class="ai-analysis-text">
+                                {{ getGeminiAnalysis() }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL: Split Vertically -->
+        <div class="right-panel">
+            <!-- TOP RIGHT: Provider Report -->
+            <div class="right-panel-top">
+                <div class="panel-card">
+                    <div class="card-header">
+                        <i class="fas fa-file-alt"></i>
+                        <h5>Third-Party Report</h5>
+                    </div>
+
+                    <div class="card-content">
+                        <!-- Loading State -->
+                        <div *ngIf="providerReportLoading" class="loading-skeleton">
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line"></div>
+                        </div>
+
+                        <!-- Loaded State -->
+                        <div *ngIf="!providerReportLoading" class="provider-report">
+                            <div class="provider-list">
+                                <div class="provider-item" *ngFor="let provider of providerResults">
+                                    <div class="provider-info">
+                                        <div class="provider-name">{{ provider.name }}</div>
+                                    </div>
+                                    <div class="provider-result" [ngClass]="getProviderStatusClass(provider.status)">
+                                        <span *ngIf="provider.status === 'loading'">
+                                            <i class="fas fa-spinner fa-spin"></i>
+                                        </span>
+                                        <span *ngIf="provider.status !== 'loading'">
+                                            {{ provider.result }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BOTTOM RIGHT: Live Screenshot -->
+            <div class="right-panel-bottom">
+                <div class="panel-card">
+                    <div class="card-header">
+                        <i class="fas fa-camera"></i>
+                        <h5>Live Screenshot</h5>
+                        <div class="screenshot-actions ms-auto">
+                            <button class="btn-action btn-sm">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card-content p-0 overflow-hidden">
+                        <div class="screenshot-container">
+                            <!-- Loading State -->
+                            <div *ngIf="screenshotLoading" class="loading-state">
+                                <p>Loading screenshot...</p>
+                            </div>
+
+                            <!-- Error State -->
+                            <div *ngIf="screenshotError && !screenshotLoading" class="error-state">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <p>{{ screenshotError }}</p>
+                            </div>
+
+                            <!-- Success State with Image -->
+                            <div *ngIf="!screenshotLoading && !screenshotError && previewData?.screenshot_base64"
+                                class="screenshot-wrapper">
+                                <img [src]="getScreenshotSrc()" alt="Website Screenshot" class="screenshot-image">
+                            </div>
+
+                            <!-- No Screenshot Available -->
+                            <div *ngIf="!screenshotLoading && !screenshotError && (!previewData || !previewData.screenshot_base64)"
+                                class="no-screenshot-state">
+                                <i class="fas fa-image"></i>
+                                <p>No screenshot available</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="activeModal.close('Close click')">Close</button>
+    <button type="button" class="btn btn-primary">
+        <i class="fas fa-download"></i>
+        Download Report
+    </button>
+</div>

@@ -11,6 +11,7 @@ import { AboutComponent } from './components/about/about.component';
 import { HeaderComponent } from './components/header/header.component';
 import { ToastComponent } from './components/toast/toast.component';
 import { AnalysisModalComponent } from './components/home/analysis-modal/analysis-modal.component';
+import { WebsiteCheckModalComponent } from './components/home/website-check-modal/website-check-modal.component';
 
 
 @NgModule({
@@ -20,7 +21,8 @@ import { AnalysisModalComponent } from './components/home/analysis-modal/analysi
     AboutComponent,
     HeaderComponent,
     ToastComponent,
-    AnalysisModalComponent
+    AnalysisModalComponent,
+    WebsiteCheckModalComponent
   ],
   imports: [
     BrowserModule,

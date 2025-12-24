@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { AnalysisResult } from '../../../models/analysis.model';
+import { AnalysisResult, WebsiteAnalysisResponse } from '../../../models/analysis.model';
 
 @Component({
     selector: 'app-analysis-modal',
@@ -10,6 +10,8 @@ import { AnalysisResult } from '../../../models/analysis.model';
 export class AnalysisModalComponent {
     @Input() analysisResult!: AnalysisResult;
     @Input() urlInput: string = '';
+    @Input() websiteData: WebsiteAnalysisResponse | null = null;
+    @Input() ocrText: string = '';
 
     constructor(public activeModal: NgbActiveModal) { }
 
@@ -20,8 +22,8 @@ export class AnalysisModalComponent {
     }
 
     getStatusLabel(): string {
-        if (!this.analysisResult) return 'Đang phân tích...';
-        const labels: Record<string, string> = { safe: 'An toàn', warning: 'Cảnh báo', danger: 'Nguy hiểm' };
-        return labels[this.analysisResult.status] || 'Không rõ';
+        if (!this.analysisResult) return 'Analyzing...';
+        const labels: Record<string, string> = { safe: 'Safe', warning: 'Warning', danger: 'Dangerous' };
+        return labels[this.analysisResult.status] || 'Unknown';
     }
 }

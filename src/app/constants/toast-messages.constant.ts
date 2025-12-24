@@ -1,23 +1,23 @@
 // Validation Messages
 export const VALIDATION_MESSAGES = {
-  URL_EMPTY: 'Vui lòng nhập URL để phân tích',
-  TEXT_EMPTY: 'Vui lòng nhập văn bản để phân tích',
-  FILE_EMPTY: 'Vui lòng chọn file để phân tích',
-  IMAGE_ONLY: 'Hiện tại chỉ hỗ trợ phân tích file ảnh',
-  OCR_EXTRACT_FAILED: 'Không thể trích xuất văn bản từ hình ảnh'
+  URL_EMPTY: 'Please enter a URL to analyze',
+  TEXT_EMPTY: 'Please enter text to analyze',
+  FILE_EMPTY: 'Please select a file to analyze',
+  IMAGE_ONLY: 'Currently only image files are supported',
+  OCR_EXTRACT_FAILED: 'Unable to extract text from image'
 };
 
 // Success Messages
 export const SUCCESS_MESSAGES = {
-  SAFE: '✅ Phân tích hoàn tất: An toàn',
-  WARNING: '⚠️ Phân tích hoàn tất: Cảnh báo',
-  DANGER: '🚨 Phân tích hoàn tất: Nguy hiểm'
+  SAFE: '✅ Analysis Complete: Safe',
+  WARNING: '⚠️ Analysis Complete: Warning',
+  DANGER: '🚨 Analysis Complete: Dangerous'
 };
 
 // Error Messages
 export const ERROR_MESSAGES = {
-  CONNECTION_FAILED: '❌ Không thể kết nối đến server. Vui lòng kiểm tra server đang chạy tại localhost:8000',
-  SERVER_ERROR: '❌ Lỗi server. Vui lòng thử lại sau',
-  GENERIC_ERROR: '❌ Đã xảy ra lỗi. Vui lòng thử lại',
-  OCR_ERROR: '❌ Lỗi khi OCR hình ảnh. Vui lòng thử lại'
+  CONNECTION_FAILED: '❌ Cannot connect to server. Please check that the server is running at localhost:8000',
+  SERVER_ERROR: '❌ Server error. Please try again later',
+  GENERIC_ERROR: '❌ An error occurred. Please try again',
+  OCR_ERROR: '❌ Error during OCR processing. Please try again'
 };
