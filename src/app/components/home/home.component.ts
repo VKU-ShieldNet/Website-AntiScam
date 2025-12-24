@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { AnalysisService } from '../../services/analysis.service';
 import { ToastService } from '../../services/toast.service';
-import { AnalysisResult, LoadingState, AnalysisType } from '../../models/analysis.model';
+import { AnalysisResult, LoadingState, AnalysisType, WebsiteAnalysisResponse } from '../../models/analysis.model';
 import { OCRUtil } from '../../utils/ocr.util';
 import { LOADING_MESSAGES, LOADING_CYCLE_DURATION } from '../../constants/loading-stages.constant';
 import { VALIDATION_MESSAGES, SUCCESS_MESSAGES, ERROR_MESSAGES } from '../../constants/toast-messages.constant';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AnalysisModalComponent } from './analysis-modal/analysis-modal.component';
+import { WebsiteCheckModalComponent } from './website-check-modal/website-check-modal.component';
 
 @Component({
   selector: 'app-home',
@@ -30,6 +31,7 @@ export class HomeComponent {
 
   // Analysis result
   analysisResult: AnalysisResult | null = null;
+  ocrExtractedText: string = '';
   private loadingInterval: any = null;
 
   constructor(
@@ -41,9 +43,8 @@ export class HomeComponent {
   async analyzeUrl(): Promise<void> {
     if (!this.validateUrlInput()) return;
 
-    await this.executeAnalysis(
-      () => this.analysisService.analyzeUrl(this.urlInput, this.deepScanEnabled)
-    );
+    // Open the new website check modal immediately
+    this.openWebsiteCheckModal();
   }
 
   private validateUrlInput(): boolean {
@@ -91,20 +92,23 @@ export class HomeComponent {
 
   private async analyzeImageWithOCR(): Promise<void> {
     try {
-      this.loadingState = { isLoading: true, stage: '🔍 Đang nhận dạng văn bản...', progress: 0 };
+      this.loadingState = { isLoading: true, stage: '🔍 Recognizing text...', progress: 0 };
 
       // Perform OCR
       const extractedText = await OCRUtil.extractText(
         this.selectedFile!,
         (progress) => {
           this.loadingState.progress = progress;
-          this.loadingState.stage = `🔍 Đang nhận dạng văn bản... ${progress}%`;
+          this.loadingState.stage = `🔍 Recognizing text... ${progress}%`;
         }
       );
 
       if (!extractedText) {
         throw new Error(VALIDATION_MESSAGES.OCR_EXTRACT_FAILED);
       }
+
+      // Store OCR text for display in modal
+      this.ocrExtractedText = extractedText;
 
       // Analyze extracted text with loading
       await this.executeAnalysis(
@@ -168,7 +172,7 @@ export class HomeComponent {
 
   cancelAnalysis(): void {
     this.stopLoadingCycle();
-    this.showToast('Đã hủy phân tích', 'info');
+    this.showToast('Analysis cancelled', 'info');
   }
 
   private delay(ms: number): Promise<void> {
@@ -197,6 +201,19 @@ export class HomeComponent {
     });
     modalRef.componentInstance.analysisResult = this.analysisResult;
     modalRef.componentInstance.urlInput = this.urlInput;
+    modalRef.componentInstance.websiteData = this.analysisResult?.websiteData || null;
+    modalRef.componentInstance.ocrText = this.ocrExtractedText;
+  }
+
+  private openWebsiteCheckModal(): void {
+    const modalRef = this.modalService.open(WebsiteCheckModalComponent, {
+      centered: true,
+      size: 'xl',
+      backdrop: 'static',
+      scrollable: true,
+      windowClass: 'website-check-modal-window'
+    });
+    modalRef.componentInstance.url = this.urlInput;
   }
 
   private getSuccessMessage(status: string): string {
@@ -205,7 +222,7 @@ export class HomeComponent {
       warning: SUCCESS_MESSAGES.WARNING,
       danger: SUCCESS_MESSAGES.DANGER
     };
-    return messages[status] || 'Phân tích hoàn tất';
+    return messages[status] || 'Analysis complete';
   }
 
   private handleError(error: any, context: string): void {
@@ -243,9 +260,9 @@ export class HomeComponent {
   }
 
   getStatusLabel(): string {
-    if (!this.analysisResult) return 'Đang phân tích...';
-    const labels = { safe: 'An toàn', warning: 'Cảnh báo', danger: 'Nguy hiểm' };
-    return labels[this.analysisResult.status] || 'Không rõ';
+    if (!this.analysisResult) return 'Analyzing...';
+    const labels = { safe: 'Safe', warning: 'Warning', danger: 'Dangerous' };
+    return labels[this.analysisResult.status] || 'Unknown';
   }
 
 

@@ -19,30 +19,113 @@
         </svg>
         <div class="score-text">
             <span class="score-value">{{ analysisResult.score }}</span>
-            <span class="score-label">Điểm</span>
+            <span class="score-label">Score</span>
         </div>
     </div>
+
+    <!-- Website Scan Details (if available) -->
+    <div class="website-scan-details" *ngIf="websiteData">
+        <div class="checks-grid">
+            <!-- SSL Check -->
+            <div class="check-card">
+                <div class="check-icon"
+                    [ngClass]="websiteData.checks.ssl.valid ? 'check-icon-safe' : 'check-icon-danger'">
+                    <i [class]="websiteData.checks.ssl.valid ? 'fas fa-lock' : 'fas fa-lock-open'"></i>
+                </div>
+                <div class="check-content">
+                    <h5 class="check-title">SSL Certificate</h5>
+                    <p class="check-status" [ngClass]="websiteData.checks.ssl.valid ? 'text-success' : 'text-danger'">
+                        {{ websiteData.checks.ssl.valid ? 'Valid' : 'Invalid' }}
+                    </p>
+                    <p class="check-detail" *ngIf="websiteData.checks.ssl.issuer">
+                        <small>{{ websiteData.checks.ssl.issuer }}</small>
+                    </p>
+                    <p class="check-detail" *ngIf="websiteData.checks.ssl.days_until_expiry">
+                        <small>Expires in {{ websiteData.checks.ssl.days_until_expiry }} days</small>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Domain Age Check -->
+            <div class="check-card">
+                <div class="check-icon"
+                    [ngClass]="!websiteData.checks.domain_age.is_new ? 'check-icon-safe' : 'check-icon-warning'">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <div class="check-content">
+                    <h5 class="check-title">Domain Age</h5>
+                    <p class="check-status"
+                        [ngClass]="!websiteData.checks.domain_age.is_new ? 'text-success' : 'text-warning'">
+                        {{ websiteData.checks.domain_age.is_new ? 'New Domain' : 'Established Domain' }}
+                    </p>
+                    <p class="check-detail" *ngIf="websiteData.checks.domain_age.age_days">
+                        <small>{{ websiteData.checks.domain_age.age_days }} days old</small>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Suspicious Keywords Check -->
+            <div class="check-card">
+                <div class="check-icon"
+                    [ngClass]="websiteData.checks.suspicious_keywords.count === 0 ? 'check-icon-safe' : 'check-icon-danger'">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="check-content">
+                    <h5 class="check-title">Suspicious Keywords</h5>
+                    <p class="check-status"
+                        [ngClass]="websiteData.checks.suspicious_keywords.count === 0 ? 'text-success' : 'text-danger'">
+                        {{ websiteData.checks.suspicious_keywords.count === 0 ? 'None detected' :
+                        websiteData.checks.suspicious_keywords.count + ' keywords' }}
+                    </p>
+                    <div class="keyword-badges" *ngIf="websiteData.checks.suspicious_keywords.found.length > 0">
+                        <span class="keyword-badge"
+                            *ngFor="let keyword of websiteData.checks.suspicious_keywords.found">
+                            {{ keyword }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gemini AI Analysis -->
+        <div class="gemini-analysis-section" *ngIf="websiteData.gemini_analysis">
+            <div class="gemini-header">
+                <i class="fas fa-robot gemini-icon"></i>
+                <h5 class="gemini-title">AI Analysis</h5>
+            </div>
+            <div class="gemini-content">
+                {{ websiteData.gemini_analysis }}
+            </div>
+        </div>
+
+        <!-- Analysis Time -->
+        <div class="analysis-time" *ngIf="websiteData.analysis_time_ms">
+            <i class="fas fa-clock"></i>
+            <span>Analysis completed in {{ websiteData.analysis_time_ms }}ms</span>
+        </div>
+    </div>
+
     <div class="result-details-grid" *ngIf="analysisResult">
         <div class="detail-section" *ngIf="analysisResult.threats?.length">
-            <h5 class="detail-title text-danger"><i class="fas fa-exclamation-triangle"></i> Mối Đe Dọa Được Phát Hiện
+            <h5 class="detail-title text-danger"><i class="fas fa-exclamation-triangle"></i> Threats Detected
             </h5>
             <ul class="detail-list threat-list">
                 <li *ngFor="let threat of analysisResult.threats">{{ threat }}</li>
             </ul>
         </div>
         <div class="detail-section" *ngIf="analysisResult.recommendations?.length">
-            <h5 class="detail-title text-success"><i class="fas fa-shield-alt"></i> Khuyến Nghị</h5>
+            <h5 class="detail-title text-success"><i class="fas fa-shield-alt"></i> Recommendations</h5>
             <ul class="detail-list recommendation-list">
                 <li *ngFor="let rec of analysisResult.recommendations">{{ rec }}</li>
             </ul>
         </div>
         <div class="detail-meta">
-            <span class="meta-item"><strong>ID Quét:</strong> #{{ analysisResult.timestamp | date:'mmss' }}</span>
-            <span class="meta-item"><strong>Thời Gian:</strong> {{ analysisResult.timestamp | date:'medium' }}</span>
+            <span class="meta-item"><strong>Scan ID:</strong> #{{ analysisResult.timestamp | date:'mmss' }}</span>
+            <span class="meta-item"><strong>Time:</strong> {{ analysisResult.timestamp | date:'medium' }}</span>
         </div>
     </div>
 </div>
 <div class="modal-footer">
-    <button type="button" class="btn btn-secondary" (click)="activeModal.close('Close click')">Đóng</button>
-    <button type="button" class="btn btn-primary">Tải Xuống PDF</button>
+    <button type="button" class="btn btn-secondary" (click)="activeModal.close('Close click')">Close</button>
+    <button type="button" class="btn btn-primary">Download PDF</button>
 </div>
