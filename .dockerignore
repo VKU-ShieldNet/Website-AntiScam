@@ -1,0 +1,17 @@
+node_modules
+npm-debug.log
+.yarn-cache
+.angular
+coverage
+dist
+.git
+.gitignore
+.vscode
+.idea
+.DS_Store
+README.md
+*.md
+.editorconfig
+.nvmrc
+tsconfig.spec.json
+karma.conf.js
